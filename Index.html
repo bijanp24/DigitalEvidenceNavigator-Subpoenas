@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Evidence Protocol & Fourth Amendment Navigator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 380px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .tab-active {
+            border-bottom: 3px solid #4f46e5;
+            color: #4f46e5;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased leading-relaxed min-h-screen flex flex-col">
+
+    <!-- Chosen Palette: Warm Slate & Judicial Indigo -->
+
+    <!-- Application Structure Plan:
+        The application is structured into four core interactive modules designed for attorneys, investigators, and legal researchers:
+        1. Executive Dashboard & Quick Evidentiary Analyzer: A interactive tool allowing users to select record types (e.g. Chat logs, BSI, Location) and context (Criminal vs. Civil) to instantly determine legal standard, statute, and governing case law.
+        2. Fourth Amendment & Stored Communications Act (SCA) Statutory Matrix: Visual distribution of evidentiary standards (Subpoena vs 2703(d) vs Warrant) supported by Chart.js canvas visualizations and structured case law cards.
+        3. Platform-Specific Subpoena & Service Matrix: Searchable and filterable directory covering Meta Platforms, Google LLC, OpenAI OpCo LLC, and Anthropic PBC, detailing exact legal entity names, CSC/CT Corp registered agents, and native export methods.
+        4. Interactive Legal Execution Playbooks: Step-by-step interactive flows for Criminal Search Warrants, Civil FRCP Rule 34 Discovery, and UIDDA Subpoena Domestication.
+    -->
+
+    <!-- Visualization & Content Choices:
+        - Interactive Selector -> Dynamic Result Box: Allows users to map any data request to the required 4th Amendment / SCA statutory standard.
+        - Chart.js Horizontal Bar Chart -> Evidentiary Threshold Hierarchy: Visually compares burden of proof for BSI, 2703(d) metadata, and 4th Amendment Warrants without using SVG.
+        - Chart.js Donut Chart -> Target Entity Distribution & Platform Service Mechanics.
+        - Interactive Search & Filter Table -> Fast access to registered agents and service addresses for Meta, Google, OpenAI, Anthropic.
+        - Tabbed Process Flowcharts -> Pure HTML/CSS structured cards for step-by-step procedural workflows (NO SVG / NO Mermaid JS).
+    -->
+
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- Navigation Bar -->
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl font-black tracking-wider text-indigo-400">⚖️ DIGITAL EVIDENCE NAVIGATOR</span>
+                <span class="hidden sm:inline text-xs bg-indigo-900/80 text-indigo-200 px-2.5 py-1 rounded-full border border-indigo-700">4th Amend & SCA Standards</span>
+            </div>
+            <nav class="flex flex-wrap gap-1 sm:gap-2 text-sm font-medium">
+                <button onclick="switchTab('analyzer')" id="tab-btn-analyzer" class="px-3 py-1.5 rounded-md hover:bg-slate-800 transition text-indigo-300 font-semibold">Analyzer</button>
+                <button onclick="switchTab('sca-framework')" id="tab-btn-sca-framework" class="px-3 py-1.5 rounded-md hover:bg-slate-800 transition">SCA & 4th Amend</button>
+                <button onclick="switchTab('platforms')" id="tab-btn-platforms" class="px-3 py-1.5 rounded-md hover:bg-slate-800 transition">Platform Directory</button>
+                <button onclick="switchTab('playbooks')" id="tab-btn-playbooks" class="px-3 py-1.5 rounded-md hover:bg-slate-800 transition">Procedural Playbooks</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+
+        <!-- INTRO BANNER -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <h1 class="text-2xl md:text-3xl font-bold text-slate-900 mb-3">
+                Compelling Digital Evidence: Procedural Protocols & Constitutional Standards
+            </h1>
+            <p class="text-slate-600 text-base md:text-lg leading-relaxed mb-4">
+                Acquiring digital evidence from tech conglomerates and generative artificial intelligence providers requires navigating the Stored Communications Act (SCA), Fourth Amendment jurisprudence, and strict entity service mechanics. This application synthesizes legal standards, statutory thresholds, and service procedures across 
+                <strong class="text-indigo-600">Meta Platforms, Inc.</strong>, 
+                <strong class="text-indigo-600">Google LLC</strong>, 
+                <strong class="text-indigo-600">OpenAI OpCo, LLC</strong>, and 
+                <strong class="text-indigo-600">Anthropic PBC</strong>.
+            </p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center text-xs font-semibold text-slate-700 pt-2">
+                <div class="bg-slate-100 p-2.5 rounded-lg border border-slate-200">
+                    <span class="block text-indigo-600 font-bold text-sm">Meta Platforms</span>
+                    Facebook, Instagram, Threads
+                </div>
+                <div class="bg-slate-100 p-2.5 rounded-lg border border-slate-200">
+                    <span class="block text-indigo-600 font-bold text-sm">Google LLC</span>
+                    Search, YouTube, Gmail, Maps
+                </div>
+                <div class="bg-slate-100 p-2.5 rounded-lg border border-slate-200">
+                    <span class="block text-indigo-600 font-bold text-sm">OpenAI OpCo</span>
+                    ChatGPT, Custom GPTs, API
+                </div>
+                <div class="bg-slate-100 p-2.5 rounded-lg border border-slate-200">
+                    <span class="block text-indigo-600 font-bold text-sm">Anthropic PBC</span>
+                    Claude, Claude Enterprise, API
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 1: EVIDENTIARY THRESHOLD ANALYZER -->
+        <section id="module-analyzer" class="space-y-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="border-b border-slate-200 pb-4 mb-6">
+                    <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <span>🔍</span> Interactive Evidentiary Threshold & Legal Standard Analyzer
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1">
+                        Select a specific data element and legal context to determine the exact statutory requirement, constitutional standard under the Fourth Amendment, and service protocol.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Control Panel -->
+                    <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">1. Select Target Platform</label>
+                            <select id="analyzer-platform" class="w-full bg-white border border-slate-300 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="meta">Meta Platforms (Facebook / Instagram / Threads)</option>
+                                <option value="google">Google LLC (Search / YouTube / Gmail)</option>
+                                <option value="openai">OpenAI OpCo, LLC (ChatGPT / OpenAI API)</option>
+                                <option value="anthropic">Anthropic PBC (Claude / Anthropic API)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">2. Select Requested Data Type</label>
+                            <select id="analyzer-datatype" class="w-full bg-white border border-slate-300 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="bsi">Basic Subscriber Info (Name, Email, Signup IP, Billing)</option>
+                                <option value="metadata">Non-Content Metadata (IP Logs, Message Headers, Timestamps)</option>
+                                <option value="content_private">Stored Private Content (DMs, Emails, Private Files, Photos)</option>
+                                <option value="ai_prompts">AI Prompts, Uploaded ESI & Chat Histories</option>
+                                <option value="location">Historical Location / Cell Site / Geofence Data</option>
+                                <option value="search_logs">Search Query Logs / Video Viewing History</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">3. Select Legal Context</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" onclick="setContext('criminal')" id="btn-ctx-criminal" class="py-2 text-xs font-bold rounded-md border border-indigo-600 bg-indigo-600 text-white text-center">
+                                    Criminal Request
+                                </button>
+                                <button type="button" onclick="setContext('civil')" id="btn-ctx-civil" class="py-2 text-xs font-bold rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 text-center">
+                                    Civil Discovery
+                                </button>
+                            </div>
+                        </div>
+
+                        <button onclick="calculateLegalStandard()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-md shadow-sm transition text-sm flex items-center justify-center gap-2">
+                            <span>⚡</span> Analyze Legal Requirements
+                        </button>
+                    </div>
+
+                    <!-- Output Results Panel -->
+                    <div id="analyzer-results" class="lg:col-span-2 bg-indigo-50/50 rounded-lg border border-indigo-200 p-6 flex flex-col justify-between">
+                        <!-- Content dynamically rendered via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 2: STATUTORY FRAMEWORK & CASE LAW -->
+        <section id="module-sca-framework" class="space-y-6 hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="border-b border-slate-200 pb-4 mb-6">
+                    <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <span>📚</span> The Stored Communications Act (SCA) & 4th Amendment Framework
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1">
+                        Understanding the 3-tier statutory framework under 18 U.S.C. § 2701 et seq. and the constitutional evolution from Third-Party Doctrine to Fourth Amendment warrant protections.
+                    </p>
+                </div>
+
+                <!-- Visualization & Statutory Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Chart 1 Container -->
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 flex flex-col items-center">
+                        <h3 class="text-sm font-bold text-slate-800 mb-2">Evidentiary Standard vs. Burden Level</h3>
+                        <p class="text-xs text-slate-500 mb-4 text-center">Comparison of judicial findings needed to compel platform disclosures</p>
+                        <div class="chart-container">
+                            <canvas id="evidentiaryChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 3-Tier Summary -->
+                    <div class="space-y-3">
+                        <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-lg">
+                            <span class="text-xs font-bold text-emerald-800 uppercase tracking-wider block">Tier 1: Basic Subscriber Info (BSI)</span>
+                            <span class="text-sm font-semibold text-emerald-900">18 U.S.C. § 2703(c)(2) • Subpoena Threshold</span>
+                            <p class="text-xs text-emerald-700 mt-1">
+                                Requires administrative, grand jury, or trial subpoena. No prior judicial review required. Covers account holder name, duration of service, billing address, signup IP with timestamp, and payment source connection details.
+                            </p>
+                        </div>
+
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                            <span class="text-xs font-bold text-blue-800 uppercase tracking-wider block">Tier 2: Non-Content Metadata</span>
+                            <span class="text-sm font-semibold text-blue-900">18 U.S.C. § 2703(d) • Specific & Articulable Facts</span>
+                            <p class="text-xs text-blue-700 mt-1">
+                                Requires court order. Law enforcement must offer specific and articulable facts showing reasonable grounds that records are relevant and material to an ongoing criminal investigation. Covers message headers, IP connection logs, and audit trails.
+                            </p>
+                        </div>
+
+                        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
+                            <span class="text-xs font-bold text-amber-800 uppercase tracking-wider block">Tier 3: Stored Communication Contents</span>
+                            <span class="text-sm font-semibold text-amber-900">18 U.S.C. § 2703(a) & 4th Amendment • Probable Cause Warrant</span>
+                            <p class="text-xs text-amber-800 mt-1">
+                                Requires Rule 41 search warrant backed by probable cause finding by a magistrate judge. Applies to private messages, email text, uploaded cloud files, and AI model prompts and chat outputs.
+                            </p>
+                        </div>
+
+                        <div class="bg-rose-50 border-l-4 border-rose-500 p-4 rounded-r-lg">
+                            <span class="text-xs font-bold text-rose-800 uppercase tracking-wider block">Civil Discovery Preclusion</span>
+                            <span class="text-sm font-semibold text-rose-900">18 U.S.C. § 2702 • Statutory Civil Bar</span>
+                            <p class="text-xs text-rose-700 mt-1">
+                                Third-party providers are statutorily prohibited from disclosing content to civil litigants. Direct Rule 45 subpoenas on providers for DMs, emails, or chat logs are routinely quashed.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Governing Case Law Repository -->
+                <h3 class="text-md font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <span>⚖️</span> Pivotal Jurisprudential Precedents
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-indigo-900 text-sm">United States v. Warshak</h4>
+                            <span class="text-[10px] font-semibold bg-slate-200 px-2 py-0.5 rounded text-slate-700">6th Cir. 2010</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-2">
+                            Established that internet users hold a reasonable expectation of privacy under the 4th Amendment in stored email contents, requiring a search warrant based on probable cause.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-indigo-900 text-sm">Carpenter v. United States</h4>
+                            <span class="text-[10px] font-semibold bg-slate-200 px-2 py-0.5 rounded text-slate-700">U.S. 2018</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-2">
+                            Curtailed the Third-Party Doctrine, holding that acquiring historical location records provides an intimate window into personal life and constitutes a search requiring a warrant.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-indigo-900 text-sm">United States v. Hoehner</h4>
+                            <span class="text-[10px] font-semibold bg-slate-200 px-2 py-0.5 rounded text-slate-700">D. Me. 2025</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-2">
+                            Confirmed that federal authorities must obtain a Rule 41 search warrant supported by probable cause to compel generative AI providers (OpenAI) to disclose stored chat transcripts.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 3: TARGET PLATFORM DIRECTORY & SERVICE MATRIX -->
+        <section id="module-platforms" class="space-y-6 hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="border-b border-slate-200 pb-4 mb-6 flex flex-col md:flex-row justify-between md:items-center gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                            <span>🏢</span> Tech Conglomerate & AI Platform Service Directory
+                        </h2>
+                        <p class="text-slate-600 text-sm mt-1">
+                            Exact corporate entity naming, registered agents, service addresses, and native data export mechanisms.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="platform-search" onkeyup="filterPlatforms()" placeholder="Search platform, agent, address..." class="bg-slate-50 border border-slate-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64">
+                    </div>
+                </div>
+
+                <!-- Platform Selection Filter Chips -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button onclick="filterByEntity('all')" id="filter-chip-all" class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-600 text-white">All Entities</button>
+                    <button onclick="filterByEntity('meta')" id="filter-chip-meta" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">Meta Platforms</button>
+                    <button onclick="filterByEntity('google')" id="filter-chip-google" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">Google LLC</button>
+                    <button onclick="filterByEntity('openai')" id="filter-chip-openai" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">OpenAI OpCo</button>
+                    <button onclick="filterByEntity('anthropic')" id="filter-chip-anthropic" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">Anthropic PBC</button>
+                </div>
+
+                <!-- Service Matrix Cards Grid -->
+                <div id="platform-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Cards rendered dynamically via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 4: PROCEDURAL PLAYBOOKS -->
+        <section id="module-playbooks" class="space-y-6 hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="border-b border-slate-200 pb-4 mb-6">
+                    <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <span>🛠️</span> Interactive Legal Execution Playbooks
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1">
+                        Step-by-step procedural workflows for law enforcement demands, civil discovery enforcement, and out-of-state domestication.
+                    </p>
+                </div>
+
+                <!-- Playbook Selection Tabs -->
+                <div class="flex border-b border-slate-200 mb-6 overflow-x-auto">
+                    <button onclick="showPlaybook('criminal')" id="pb-btn-criminal" class="px-4 py-2 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 whitespace-nowrap">
+                        1. Criminal Law Enforcement Workflow
+                    </button>
+                    <button onclick="showPlaybook('civil')" id="pb-btn-civil" class="px-4 py-2 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap">
+                        2. Civil FRCP Rule 34 Discovery Workflow
+                    </button>
+                    <button onclick="showPlaybook('uidda')" id="pb-btn-uidda" class="px-4 py-2 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap">
+                        3. Out-of-State Subpoena Domestication (UIDDA)
+                    </button>
+                </div>
+
+                <!-- Playbook Container -->
+                <div id="playbook-content" class="space-y-4">
+                    <!-- Playbook rendered dynamically via JS -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 mt-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="font-semibold text-slate-300">Digital Evidence Subpoena & Fourth Amendment Legal Standard Reference</p>
+            <p>Based on 18 U.S.C. §§ 2701–2713 (Stored Communications Act), FRCP Rule 34/45, Rule 41, and Federal Fourth Amendment Jurisprudence.</p>
+            <p class="text-slate-500">Notice: This tool provides general legal research reference and information architecture. Always consult jurisdiction-specific local rules and corporate agent filings.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic & Data Store -->
+    <script>
+        // DATA STORE
+        const platformData = [
+            {
+                id: 'meta',
+                category: 'meta',
+                name: 'Meta Platforms, Inc.',
+                products: ['Facebook', 'Instagram', 'Threads', 'Messenger', 'Meta Quest'],
+                agent: 'CSC - Lawyers Incorporating Service',
+                address: '2710 Gateway Oaks Drive, Suite 150N, Sacramento, CA 95833',
+                portal: 'Law Enforcement Online Request System (LERS)',
+                crimStandards: {
+                    bsi: 'Subpoena required (18 U.S.C. § 2703(c)(2))',
+                    meta: 'Court Order required (18 U.S.C. § 2703(d))',
+                    content: 'Search Warrant required (Rule 41 Probable Cause)'
+                },
+                civilMechanism: 'Serve FRCP Rule 34 party discovery directly on account owner; compel export via "Download Your Information" tool. Provider subpoenas quashed under § 2702.',
+                domestication: 'Must domesticate via Sacramento County Superior Court under California UIDDA before CSC acceptance.',
+                gags: 'Meta notifies account owners prior to disclosure unless restricted by § 2705(b) gag order.'
+            },
+            {
+                id: 'google',
+                category: 'google',
+                name: 'Google LLC',
+                products: ['Google Search', 'YouTube', 'Gmail', 'Google Drive', 'Google Maps', 'Android'],
+                agent: 'Corporation Service Company (CSC) / CT Corporation',
+                address: '2710 Gateway Oaks Drive, Suite 150N, Sacramento, CA 95833',
+                portal: 'Google Law Enforcement Request System (LERS)',
+                crimStandards: {
+                    bsi: 'Subpoena required for registration details & signup IP',
+                    meta: '2703(d) Order required for email headers & connection logs',
+                    content: 'Search Warrant required for Gmail text, Drive files, private YouTube videos'
+                },
+                civilMechanism: 'Serve FRCP Rule 34 request on account holder to execute Google Takeout download. Direct subpoenas for content are barred by § 2702.',
+                domestication: 'Domesticate out-of-state state court subpoenas via Santa Clara County Superior Court or N.D. Cal.',
+                gags: 'Routinely challenges overbroad geofence and reverse-keyword warrants under 4th Amendment particularity.'
+            },
+            {
+                id: 'openai',
+                category: 'openai',
+                name: 'OpenAI OpCo, LLC',
+                products: ['ChatGPT', 'Custom GPTs', 'OpenAI API', 'DALL-E'],
+                agent: 'CT Corporation System',
+                address: '330 N. Brand Blvd., Suite 700, Glendale, CA 91203 (EEA: OpenAI Ireland Ltd, Dublin)',
+                portal: 'OpenAI Centralized Law Enforcement Intake Portal',
+                crimStandards: {
+                    bsi: 'Subpoena for registration name, email, payment connection, IP logs',
+                    meta: '2703(d) Order for API usage metrics & timestamp metadata',
+                    content: 'Rule 41 Search Warrant for stored user prompts, uploaded ESI, and chat outputs'
+                },
+                civilMechanism: 'Serve party discovery under FRCP 34 for CSV/JSON prompt export. No privilege (attorney-client/psychotherapist) protects chatbot conversations.',
+                domestication: 'Domesticate subpoena in Los Angeles County / California state court for CT Corp service in Glendale.',
+                gags: 'Chat logs constitute discoverable ESI in civil litigation; user privacy handled via protective orders.'
+            },
+            {
+                id: 'anthropic',
+                category: 'anthropic',
+                name: 'Anthropic PBC',
+                products: ['Claude', 'Claude Enterprise', 'Anthropic API'],
+                agent: 'Corporation Service Company (CSC)',
+                address: '80 State Street, Albany, NY 12207 (Notice address: 548 Market St, PMB 90375, SF, CA 94104)',
+                portal: 'law-enforcement-requests@anthropic.com',
+                crimStandards: {
+                    bsi: 'Subpoena for user registration, billing logs, connection history',
+                    meta: '2703(d) Order for transactional metadata',
+                    content: 'Search Warrant required for stored user prompts and model completions'
+                },
+                civilMechanism: 'Direct civil discovery requests to enterprise clients (data controllers) or serve account holders directly under FRCP 34.',
+                domestication: 'Domesticate via New York State court or California state court depending on selected service point.',
+                gags: 'Enterprise/API terms specify customer data is not used for model training; configurable zero-retention options exist.'
+            }
+        ];
+
+        let currentContext = 'criminal';
+
+        // TAB SWITCHING
+        function switchTab(tabId) {
+            ['analyzer', 'sca-framework', 'platforms', 'playbooks'].forEach(id => {
+                const el = document.getElementById(`module-${id}`);
+                const btn = document.getElementById(`tab-btn-${id}`);
+                if (id === tabId) {
+                    el.classList.remove('hidden');
+                    btn.classList.add('text-indigo-400', 'font-bold', 'border-b-2', 'border-indigo-400');
+                    btn.classList.remove('text-slate-300');
+                } else {
+                    el.classList.add('hidden');
+                    btn.classList.remove('text-indigo-400', 'font-bold', 'border-b-2', 'border-indigo-400');
+                }
+            });
+
+            if (tabId === 'sca-framework' && !window.evidentiaryChartRendered) {
+                renderEvidentiaryChart();
+                window.evidentiaryChartRendered = true;
+            }
+        }
+
+        // CONTEXT SWITCHER IN ANALYZER
+        function setContext(ctx) {
+            currentContext = ctx;
+            const btnCrim = document.getElementById('btn-ctx-criminal');
+            const btnCiv = document.getElementById('btn-ctx-civil');
+            if (ctx === 'criminal') {
+                btnCrim.className = "py-2 text-xs font-bold rounded-md border border-indigo-600 bg-indigo-600 text-white text-center";
+                btnCiv.className = "py-2 text-xs font-bold rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 text-center";
+            } else {
+                btnCiv.className = "py-2 text-xs font-bold rounded-md border border-indigo-600 bg-indigo-600 text-white text-center";
+                btnCrim.className = "py-2 text-xs font-bold rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 text-center";
+            }
+            calculateLegalStandard();
+        }
+
+        // CALCULATE LEGAL STANDARD
+        function calculateLegalStandard() {
+            const platformKey = document.getElementById('analyzer-platform').value;
+            const dataType = document.getElementById('analyzer-datatype').value;
+            const target = platformData.find(p => p.id === platformKey);
+            const container = document.getElementById('analyzer-results');
+
+            let title = "";
+            let standard = "";
+            let statute = "";
+            let procedure = "";
+            let badgeColor = "";
+            let precedent = "";
+
+            if (currentContext === 'criminal') {
+                if (dataType === 'bsi') {
+                    title = "Basic Subscriber Information (BSI)";
+                    standard = "Subpoena Standard (No Judicial Finding Required)";
+                    statute = "18 U.S.C. § 2703(c)(2)";
+                    procedure = `Issue law enforcement subpoena directly to ${target.name} via ${target.portal}. Covers registration name, duration, billing connection, signup IP address.`;
+                    badgeColor = "bg-emerald-100 text-emerald-800 border-emerald-300";
+                    precedent = "United States v. Miller (1976) - Voluntary conveyance to third party.";
+                } else if (dataType === 'metadata') {
+                    title = "Non-Content Transactional Records & Logs";
+                    standard = "Specific and Articulable Facts Standard";
+                    statute = "18 U.S.C. § 2703(d) Court Order";
+                    procedure = `Submit application to magistrate judge showing reasonable grounds to believe metadata is relevant and material to an ongoing investigation. Serve order on ${target.agent}.`;
+                    badgeColor = "bg-blue-100 text-blue-800 border-blue-300";
+                    precedent = "Smith v. Maryland (1979) / SCA § 2703(d)";
+                } else if (dataType === 'content_private' || dataType === 'ai_prompts') {
+                    title = dataType === 'ai_prompts' ? "Generative AI Prompts, Chat History & Uploads" : "Stored Private Content & Communications";
+                    standard = "Fourth Amendment Probable Cause Standard";
+                    statute = "18 U.S.C. § 2703(a) / Fed. R. Crim. P. 41 Warrant";
+                    procedure = `Draft affidavit demonstrating probable cause that criminal evidence resides within the account. Obtain search warrant signed by judge and serve upon ${target.name}.`;
+                    badgeColor = "bg-amber-100 text-amber-800 border-amber-300";
+                    precedent = dataType === 'ai_prompts' ? "United States v. Hoehner (D. Me. 2025) / Warshak (6th Cir. 2010)" : "United States v. Warshak (6th Cir. 2010)";
+                } else if (dataType === 'location' || dataType === 'search_logs') {
+                    title = "Location Records / Query Telemetry";
+                    standard = "Heightened Fourth Amendment Scrutiny / Warrant Required";
+                    statute = "Carpenter Standard & 4th Amendment Particularity";
+                    procedure = `Historical location and broad reverse-keyword/geofence searches require a probable cause warrant. Expect challenges if scope lacks spatial/temporal limitation.`;
+                    badgeColor = "bg-rose-100 text-rose-800 border-rose-300";
+                    precedent = "Carpenter v. United States (2018)";
+                }
+            } else {
+                // Civil Context
+                if (dataType === 'bsi' || dataType === 'metadata') {
+                    title = "Non-Content Subscriber Info (Civil Request)";
+                    standard = "Subpoena / UIDDA Domestication";
+                    statute = "FRCP Rule 45 & State Subpoena Rules";
+                    procedure = `Service on third-party provider allowed for basic non-content subscriber info, provided subpoena is domesticated in designated jurisdiction (${target.agent}).`;
+                    badgeColor = "bg-slate-100 text-slate-800 border-slate-300";
+                    precedent = "SCA § 2702(c) permissive non-content disclosure.";
+                } else {
+                    title = "Private Communication Content & AI Chat Logs (Civil)";
+                    standard = "Statutory Bar on Provider Disclosure / Compelled Party Discovery";
+                    statute = "18 U.S.C. § 2702 Civil Statutory Bar & FRCP Rule 34";
+                    procedure = `Third-party subpoenas to ${target.name} for stored contents will be QUASHED under § 2702. Litigant MUST serve FRCP Rule 34 discovery directly on the opposing account holder to force native export (${target.products[0]} export tool). No evidentiary privilege shields AI prompts.`;
+                    badgeColor = "bg-rose-100 text-rose-800 border-rose-300";
+                    precedent = "In re Subpoena Duces Tecum to AOL Inc. / FRCP Rule 34";
+                }
+            }
+
+            container.innerHTML = `
+                <div>
+                    <div class="flex flex-wrap justify-between items-start gap-2 mb-4">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Target Entity: ${target.name}</span>
+                            <h3 class="text-lg font-bold text-slate-900">${title}</h3>
+                        </div>
+                        <span class="text-xs font-bold px-3 py-1 rounded-full border ${badgeColor}">
+                            ${currentContext.toUpperCase()} CONTEXT
+                        </span>
+                    </div>
+
+                    <div class="space-y-3 text-sm">
+                        <div class="bg-white p-3 rounded border border-indigo-100">
+                            <span class="block text-xs font-bold text-indigo-900 uppercase">Required Legal Standard & Governing Statute</span>
+                            <span class="font-bold text-indigo-700">${standard}</span>
+                            <span class="block text-xs text-slate-500 mt-0.5">${statute}</span>
+                        </div>
+
+                        <div class="bg-white p-3 rounded border border-slate-200">
+                            <span class="block text-xs font-bold text-slate-700 uppercase">Operational Protocol & Action Steps</span>
+                            <p class="text-slate-700 mt-1">${procedure}</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                            <div class="bg-slate-100 p-2.5 rounded">
+                                <span class="font-bold block text-slate-700">Registered Agent for Service:</span>
+                                ${target.agent}<br>
+                                <span class="text-slate-500">${target.address}</span>
+                            </div>
+                            <div class="bg-slate-100 p-2.5 rounded">
+                                <span class="font-bold block text-slate-700">Leading Precedent:</span>
+                                ${precedent}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-indigo-100 flex justify-between items-center text-xs text-indigo-900 font-medium">
+                    <span>Intake Route: ${target.portal}</span>
+                    <button onclick="switchTab('platforms')" class="text-indigo-600 hover:underline">View Full Platform Details →</button>
+                </div>
+            `;
+        }
+
+        // RENDER PLATFORM GRID
+        function renderPlatforms(dataToRender) {
+            const grid = document.getElementById('platform-grid');
+            grid.innerHTML = '';
+
+            dataToRender.forEach(p => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-50 rounded-lg border border-slate-200 p-5 space-y-4 hover:shadow-md transition";
+                card.innerHTML = `
+                    <div class="border-b border-slate-200 pb-3 flex justify-between items-start">
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-base">${p.name}</h3>
+                            <div class="flex flex-wrap gap-1 mt-1">
+                                ${p.products.map(prod => `<span class="bg-white text-slate-600 border border-slate-200 text-[10px] px-1.5 py-0.5 rounded">${prod}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 text-xs text-slate-700">
+                        <div>
+                            <span class="font-bold text-slate-900 block">Registered Agent & Service Address:</span>
+                            <span class="text-indigo-900 font-semibold">${p.agent}</span><br>
+                            <span>${p.address}</span>
+                        </div>
+
+                        <div>
+                            <span class="font-bold text-slate-900 block">Law Enforcement Intake:</span>
+                            <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded border border-indigo-200 font-mono text-[11px]">${p.portal}</span>
+                        </div>
+
+                        <div class="bg-white p-2.5 rounded border border-slate-200 space-y-1">
+                            <span class="font-bold text-slate-900 block">Criminal Evidentiary Standards:</span>
+                            <p>• <strong>BSI:</strong> ${p.crimStandards.bsi}</p>
+                            <p>• <strong>Metadata:</strong> ${p.crimStandards.meta}</p>
+                            <p>• <strong>Content:</strong> ${p.crimStandards.content}</p>
+                        </div>
+
+                        <div class="bg-amber-50 p-2.5 rounded border border-amber-200 text-amber-900">
+                            <span class="font-bold block">Civil Discovery Mechanics:</span>
+                            ${p.civilMechanism}
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterPlatforms() {
+            const q = document.getElementById('platform-search').value.toLowerCase();
+            const filtered = platformData.filter(p => 
+                p.name.toLowerCase().includes(q) ||
+                p.agent.toLowerCase().includes(q) ||
+                p.address.toLowerCase().includes(q) ||
+                p.products.some(prod => prod.toLowerCase().includes(q))
+            );
+            renderPlatforms(filtered);
+        }
+
+        function filterByEntity(entity) {
+            ['all', 'meta', 'google', 'openai', 'anthropic'].forEach(id => {
+                const btn = document.getElementById(`filter-chip-${id}`);
+                if (id === entity) {
+                    btn.className = "px-3 py-1 rounded-full text-xs font-bold bg-indigo-600 text-white";
+                } else {
+                    btn.className = "px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200";
+                }
+            });
+
+            if (entity === 'all') {
+                renderPlatforms(platformData);
+            } else {
+                renderPlatforms(platformData.filter(p => p.category === entity));
+            }
+        }
+
+        // PROCEDURAL PLAYBOOKS
+        const playbooks = {
+            criminal: `
+                <div class="space-y-4">
+                    <h3 class="font-bold text-slate-900 text-md">Criminal Evidence Acquisition Playbook (18 U.S.C. § 2703)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+                        <div class="bg-slate-50 p-3 rounded border border-slate-200 space-y-1">
+                            <span class="font-bold text-indigo-600 block">Step 1: Entity ID & Preservation</span>
+                            <p class="text-slate-600">Issue an 18 U.S.C. § 2703(f) Preservation Letter to the target provider to temporarily lock account state for 90-180 days.</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded border border-slate-200 space-y-1">
+                            <span class="font-bold text-indigo-600 block">Step 2: Obtain BSI Subpoena</span>
+                            <p class="text-slate-600">Issue grand jury or administrative subpoena to obtain basic subscriber identity, verified email, and signup IP address.</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded border border-slate-200 space-y-1">
+                            <span class="font-bold text-indigo-600 block">Step 3: § 2703(d) Order</span>
+                            <p class="text-slate-600">Draft application showing specific and articulable facts to obtain transactional IP connection logs and message headers.</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded border border-slate-200 space-y-1">
+                            <span class="font-bold text-indigo-600 block">Step 4: Rule 41 Warrant</span>
+                            <p class="text-slate-600">Draft probable cause affidavit for full content (DMs, emails, AI prompt logs). Include 18 U.S.C. § 2705(b) gag order request.</p>
+                        </div>
+                    </div>
+                </div>
+            `,
+            civil: `
+                <div class="space-y-4">
+                    <h3 class="font-bold text-slate-900 text-md">Civil Discovery Playbook (FRCP Rule 34 Execution)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                        <div class="bg-slate-50 p-3 rounded border border-slate-200 space-y-1">
+                            <span class="font-bold text-indigo-600 block">Step 1: Avoid Provider Subpoenas</span>
+                            <p class="text-slate-600">Do NOT serve Rule 45 subpoenas seeking private content directly on Meta, Google, OpenAI, or Anthropic. They will be quashed under 18 U.S.C. § 2702.</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded border border-slate-200 space-y-1">
+                            <span class="font-bold text-indigo-600 block">Step 2: Direct FRCP Rule 34 Request</span>
+                            <p class="text-slate-600">Serve request for production directly on the opposing party account holder, defining ESI to include native platform exports and AI prompt history.</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded border border-slate-200 space-y-1">
+                            <span class="font-bold text-indigo-600 block">Step 3: Compel Native Export</span>
+                            <p class="text-slate-600">Compel account holder to log in and use native export features (Meta "Download Info", Google Takeout, ChatGPT Export) to generate verifiable JSON/CSV files.</p>
+                        </div>
+                    </div>
+                </div>
+            `,
+            uidda: `
+                <div class="space-y-4">
+                    <h3 class="font-bold text-slate-900 text-md">Out-of-State Subpoena Domestication Playbook (UIDDA)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                        <div class="bg-slate-50 p-3 rounded border border-slate-200 space-y-1">
+                            <span class="font-bold text-indigo-600 block">Step 1: Trial Court Subpoena</span>
+                            <p class="text-slate-600">Issue standard discovery subpoena from trial court jurisdiction requesting non-content records authorized by § 2702(c).</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded border border-slate-200 space-y-1">
+                            <span class="font-bold text-indigo-600 block">Step 2: Domestication Court Submission</span>
+                            <p class="text-slate-600">Submit subpoena to clerk of court in county where registered agent resides (e.g. Sacramento Superior Court for CSC / Meta/Google, LA Superior for CT Corp / OpenAI).</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded border border-slate-200 space-y-1">
+                            <span class="font-bold text-indigo-600 block">Step 3: Personal Service on Agent</span>
+                            <p class="text-slate-600">Serve the re-issued in-state subpoena via process server directly on designated agent facility. Providers reject service by mail or fax.</p>
+                        </div>
+                    </div>
+                </div>
+            `
+        };
+
+        function showPlaybook(pbKey) {
+            ['criminal', 'civil', 'uidda'].forEach(id => {
+                const btn = document.getElementById(`pb-btn-${id}`);
+                if (id === pbKey) {
+                    btn.className = "px-4 py-2 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 whitespace-nowrap";
+                } else {
+                    btn.className = "px-4 py-2 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap";
+                }
+            });
+            document.getElementById('playbook-content').innerHTML = playbooks[pbKey];
+        }
+
+        // CHART.JS IMPLEMENTATION
+        function renderEvidentiaryChart() {
+            const ctx = document.getElementById('evidentiaryChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        'Basic Subscriber Info (§ 2703c2)', 
+                        'Transactional Metadata (§ 2703d)', 
+                        'Stored Content (§ 2703a / 4th Amend)', 
+                        'Location / Geofence Data'
+                    ],
+                    datasets: [{
+                        label: 'Judicial Scrutiny / Burden Level',
+                        data: [25, 55, 90, 95],
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(217, 119, 6, 0.7)',
+                            'rgba(225, 29, 72, 0.7)'
+                        ],
+                        borderColor: [
+                            '#10b981',
+                            '#3b82f6',
+                            '#d97706',
+                            '#e11d48'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const val = context.raw;
+                                    if (val === 25) return ' Standard: Subpoena (No judicial review)';
+                                    if (val === 55) return ' Standard: 2703(d) Specific & Articulable Facts Order';
+                                    if (val === 90) return ' Standard: Rule 41 Search Warrant (Probable Cause)';
+                                    if (val === 95) return ' Standard: Particularized Warrant + Heightened Scrutiny';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            max: 100,
+                            ticks: { display: false },
+                            grid: { display: false }
+                        },
+                        y: {
+                            ticks: {
+                                font: { size: 11 },
+                                callback: function(value, index) {
+                                    const label = this.getLabelForValue(index);
+                                    return label.length > 20 ? label.substr(0, 18) + '...' : label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            calculateLegalStandard();
+            renderPlatforms(platformData);
+            showPlaybook('criminal');
+        });
+    </script>
+</body>
+</html>
